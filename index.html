@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CATTI - 猫咪版MBTI心理测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overscroll-behavior: none;
+        }
+        
+        .cat-scroll-container {
+            overflow: hidden;
+            position: relative;
+            height: 200px;
+            margin: 20px 0;
+        }
+        
+        .cat-row {
+            display: flex;
+            position: absolute;
+            white-space: nowrap;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+        
+        .cat-image {
+            width: 80px;
+            height: 60px;
+            margin: 8px;
+            display: inline-block;
+        }
+        
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        
+        @keyframes scroll-right {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
+        }
+        
+        .cat-scroll-container:hover .cat-row {
+            animation-duration: 30s;
+        }
+        
+        .page {
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        }
+        
+        .page.hidden {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            transform: translateY(10px);
+        }
+        
+        .page.fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .option {
+            transition: all 0.3s ease;
+        }
+        
+        .option:active {
+            transform: scale(0.98);
+        }
+        
+        .option.selected {
+            box-shadow: 0 0 0 2px black;
+            background-color: #f0f0f0;
+        }
+        
+        .result-card {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-tag {
+            background-color: #f5f5f5;
+        }
+        
+        .loading-text::after {
+            content: '';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+        
+        .cat-pixel-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+        
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+            }
+            
+            .cat-scroll-container {
+                height: 150px;
+                margin: 10px 0;
+            }
+            
+            .cat-image {
+                width: 60px;
+                height: 45px;
+                margin: 5px;
+            }
+            
+            .result-card {
+                padding: 20px !important;
+                border-radius: 20px !important;
+            }
+            
+            .text-xl {
+                font-size: 16px !important;
+            }
+            
+            .text-2xl {
+                font-size: 20px !important;
+            }
+            
+            .text-3xl {
+                font-size: 24px !important;
+            }
+            
+            .text-5xl {
+                font-size: 32px !important;
+            }
+        }
+        
+        @media (max-width: 380px) {
+            .result-tag {
+                font-size: 10px !important;
+                padding: 6px 10px !important;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-start md:justify-center p-4">
+    <div id="home-page" class="page w-full max-w-2xl md:max-w-4xl">
+        <header class="w-full text-center mb-6 md:mb-8">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-black">CATTI</h1>
+        </header>
+        
+        <div class="cat-scroll-container w-full max-w-2xl md:max-w-4xl">
+            <div class="cat-row" style="top: 5px; animation: scroll-left 20s linear infinite;"></div>
+            <div class="cat-row" style="top: 75px; animation: scroll-right 25s linear infinite;"></div>
+            <div class="cat-row" style="top: 145px; animation: scroll-left 22s linear infinite;"></div>
+        </div>
+        
+        <div class="text-center mt-6 md:mt-8 px-4">
+            <h2 class="text-xl md:text-2xl lg:text-3xl font-bold text-black mb-2">重生之我变成了一只猫</h2>
+            <p class="text-base md:text-lg lg:text-xl text-gray-600 mb-6 md:mb-8">"这一次，我要活出自己的猫生"</p>
+            <button id="start-test" class="bg-black text-white text-base md:text-xl py-3 md:py-4 px-8 md:px-12 rounded-full hover:bg-gray-800 transition-colors duration-300 active:scale-95">
+                开始测试
+            </button>
+        </div>
+    </div>
+    
+    <div id="quiz-page" class="page w-full max-w-2xl md:max-w-4xl hidden">
+        <div class="w-full flex items-center justify-between mb-4">
+            <button id="back-button" class="p-2 text-xl md:text-2xl">←</button>
+            <div class="text-center">
+                <div id="progress" class="text-base md:text-lg">1/10</div>
+            </div>
+            <div class="w-8"></div>
+        </div>
+        <div class="w-full h-0.5 bg-gray-200 mb-6 md:mb-8"></div>
+        
+        <div class="flex items-center mb-6 md:mb-8">
+            <div id="cat-icon" class="w-12 h-12 md:w-16 md:h-16 bg-gray-200 rounded-full flex items-center justify-center mr-3 md:mr-4 text-2xl md:text-3xl">
+                <img src="./cats/cat-sprite.png" class="cat-pixel-img" alt="猫咪">
+            </div>
+            <div id="cat-thought" class="flex-1 bg-gray-200 rounded-full px-4 md:px-6 py-2 md:py-3 text-sm md:text-base">
+                社交还是不社交，这是个问题
+            </div>
+        </div>
+        
+        <div id="question" class="text-base md:text-xl font-bold mb-6 md:mb-8 px-2">
+            当你看到铲屎官带回一个奇怪的自动喂食器，你会？
+        </div>
+        
+        <div id="options" class="space-y-3 md:space-y-4 mb-8 md:mb-12 px-2"></div>
+        
+        <button id="next-button" class="w-full bg-gray-400 text-white text-base md:text-xl py-3 md:py-4 rounded-full hover:bg-gray-500 transition-colors duration-300 disabled:opacity-50 active:scale-95">
+            继续 →
+        </button>
+    </div>
+    
+    <div id="loading-page" class="page w-full max-w-2xl md:max-w-4xl hidden">
+        <div class="text-center">
+            <div class="text-4xl md:text-5xl mb-4">🐱</div>
+            <div id="loading-text" class="text-base md:text-xl">正在读取你的猫性<span class="loading-text"></span></div>
+        </div>
+    </div>
+    
+    <div id="result-page" class="page w-full max-w-2xl md:max-w-4xl hidden">
+        <div class="w-full flex items-center justify-between mb-4 px-2">
+            <div class="text-xs md:text-sm">CATTI结果</div>
+            <div id="result-date" class="text-xs md:text-sm text-gray-500"></div>
+        </div>
+        <div class="w-full h-0.5 bg-gray-200 mb-6 md:mb-8"></div>
+        
+        <div id="result-card" class="result-card bg-white rounded-2xl md:rounded-3xl p-5 md:p-8 mb-6 md:mb-8 mx-2">
+            <div class="flex justify-center mb-4 md:mb-6">
+                <div id="result-cat-icon" class="w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center text-5xl md:text-6xl">
+                    <img src="./cats/cat-sprite.png" class="cat-pixel-img" alt="猫咪">
+                </div>
+            </div>
+            
+            <div class="text-center mb-2">
+                <h2 id="result-title" class="text-lg md:text-2xl font-bold">拒绝不了任何人的奶橘猫</h2>
+            </div>
+            
+            <div class="text-center mb-4 md:mb-6">
+                <p id="result-subtitle" class="text-gray-500 text-sm md:text-base">有求必应的宇宙中心</p>
+            </div>
+            
+            <div class="bg-gray-100 rounded-xl md:rounded-2xl p-3 md:p-4 mb-4 md:mb-6">
+                <div class="flex items-start">
+                    <span class="text-xl md:text-2xl mr-2">"</span>
+                    <p id="result-monologue" class="text-gray-600 text-sm md:text-base">我帮，我帮，都帮，真的不麻烦。</p>
+                </div>
+            </div>
+            
+            <div id="result-tags" class="flex flex-wrap justify-center gap-2 mb-4 md:mb-6">
+                <span class="result-tag px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm">间歇性想独处</span>
+                <span class="result-tag px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm">人类观察计划成员</span>
+                <span class="result-tag px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm">踩奶专业户</span>
+                <span class="result-tag px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm">罐头探测雷达</span>
+            </div>
+            
+            <div class="text-gray-700 leading-relaxed text-sm md:text-base" style="font-family: system-ui, -apple-system, sans-serif;">
+                <p id="result-description">你就像一只趴在阳台上看风景的橘猫，阳光洒在你身上，你觉得这就是猫生的巅峰时刻。</p>
+            </div>
+        </div>
+        
+        <button id="save-result" class="w-full bg-black text-white text-base md:text-xl py-3 md:py-4 rounded-full hover:bg-gray-800 transition-colors duration-300 active:scale-95 mx-2">
+            保存结果，分享给朋友
+        </button>
+    </div>
+    
+    <script>
+        // 猫咪图片文件夹路径：./cats/
+        // 请将所有猫咪像素图放在 d:\CATI\cats\ 目录下
+        // 文件命名建议：
+        // - 首页滚动图：cat_01.png, cat_02.png, ... (对应不同品种)
+        // - 答题页图标：quiz_icon_01.png, quiz_icon_02.png, ...
+        // - 结果页大图：result_cream.png (奶橘), result_siamese.png (暹罗), ...
+        // - result_blue.png (英短), result_black.png (黑猫), result_calico.png (三花)
+        // - result_ragdoll.png (布偶), result_sphynx.png (无毛), result_cow.png (奶牛)
+        // - result_silver.png (银渐层), result_tabby.png (美短), result_li.png (狸花), result_persian.png (波斯)
+        
+        const catRows = document.querySelectorAll('.cat-row');
+        catRows.forEach(row => {
+            for (let i = 0; i < 10; i++) {
+                const catElement = document.createElement('div');
+                catElement.className = 'cat-image bg-gray-200 rounded';
+                // 如果有像素图，取消下面注释并修改路径：
+                // catElement.innerHTML = `<img src="./cats/cat_${String(i + 1).padStart(2, '0')}.png" class="cat-pixel-img" alt="猫咪">`;
+                row.appendChild(catElement);
+            }
+        });
+        
+        const quizData = [
+            {
+                id: 1,
+                thought: "社交还是不社交，这是个问题",
+                question: "当你看到铲屎官带回一个奇怪的自动喂食器，你会？",
+                options: [
+                    { text: "直接冲上去，先闻为敬，对新事物充满好奇", scores: { curiosity: 2, brave: 1 } },
+                    { text: "在旁边观望，确认安全后再慢慢靠近", scores: { cautious: 2 } },
+                    { text: "绕道走，今天不想尝试新事物", scores: { timid: 2 } }
+                ]
+            },
+            {
+                id: 2,
+                thought: "深夜总是充满神秘感",
+                question: "深夜客厅传来响声，作为猫的你决定？",
+                options: [
+                    { text: "立刻冲过去一探究竟", scores: { curiosity: 1, brave: 2, energetic: 1 } },
+                    { text: "在原地观察，确认情况后再行动", scores: { cautious: 2 } },
+                    { text: "躲到安全的地方，等声音消失", scores: { timid: 2 } }
+                ]
+            },
+            {
+                id: 3,
+                thought: "铲屎官的膝盖是最温暖的地方",
+                question: "当铲屎官坐在沙发上时，你会？",
+                options: [
+                    { text: "立刻跳到膝盖上，享受温暖", scores: { clingy: 2 } },
+                    { text: "在旁边趴下，保持一定距离", scores: { independent: 2 } },
+                    { text: "继续做自己的事，偶尔看一眼", scores: { aloof: 2 } }
+                ]
+            },
+            {
+                id: 4,
+                thought: "玩具是生活的必需品",
+                question: "当铲屎官拿出新玩具时，你会？",
+                options: [
+                    { text: "立刻扑上去，玩个不停", scores: { playful: 2, energetic: 1 } },
+                    { text: "慢慢靠近，观察后再玩", scores: { cautious: 2 } },
+                    { text: "看都不看，继续睡觉", scores: { relaxed: 2 } }
+                ]
+            },
+            {
+                id: 5,
+                thought: "窗外的世界很精彩",
+                question: "当你看到窗外有鸟飞过，你会？",
+                options: [
+                    { text: "立刻冲到窗边，试图抓住", scores: { energetic: 2, playful: 1 } },
+                    { text: "静静地看着，偶尔发出叫声", scores: { curious: 2 } },
+                    { text: "看一眼就走开，不感兴趣", scores: { aloof: 2 } }
+                ]
+            },
+            {
+                id: 6,
+                thought: "吃饭是人生大事",
+                question: "当铲屎官准备食物时，你会？",
+                options: [
+                    { text: "围在脚边，不停叫着催促", scores: { clingy: 1, impatient: 2 } },
+                    { text: "坐在旁边，安静等待", scores: { patient: 2 } },
+                    { text: "继续做自己的事，等食物放好再过去", scores: { independent: 2 } }
+                ]
+            },
+            {
+                id: 7,
+                thought: "陌生人总是让人警惕",
+                question: "当家里来了陌生人，你会？",
+                options: [
+                    { text: "主动靠近，好奇地闻一闻", scores: { sociable: 2, curious: 1 } },
+                    { text: "躲在角落，观察陌生人", scores: { cautious: 2 } },
+                    { text: "立刻躲到房间里，不出来", scores: { timid: 2 } }
+                ]
+            },
+            {
+                id: 8,
+                thought: "睡眠是最重要的",
+                question: "当铲屎官想和你玩耍时，你正在睡觉，你会？",
+                options: [
+                    { text: "立刻醒来，和铲屎官玩耍", scores: { sociable: 2, playful: 1 } },
+                    { text: "半睡半醒，敷衍地玩一会儿", scores: { patient: 2 } },
+                    { text: "翻个身，继续睡觉", scores: { relaxed: 2 } }
+                ]
+            },
+            {
+                id: 9,
+                thought: "高处是我的领地",
+                question: "当你看到高处有个空位，你会？",
+                options: [
+                    { text: "立刻跳上去，占据领地", scores: { brave: 2, energetic: 1 } },
+                    { text: "慢慢爬上去，确保安全", scores: { cautious: 2 } },
+                    { text: "看看就好，不想冒险", scores: { timid: 2 } }
+                ]
+            },
+            {
+                id: 10,
+                thought: "猫生就是要享受",
+                question: "你最喜欢的活动是？",
+                options: [
+                    { text: "和铲屎官互动玩耍", scores: { sociable: 2, playful: 1 } },
+                    { text: "在阳光下睡觉", scores: { relaxed: 2 } },
+                    { text: "独自探索家里的角落", scores: { independent: 1, curious: 2 } }
+                ]
+            }
+        ];
+        
+        const catResults = [
+            {
+                type: "奶橘猫",
+                title: "拒绝不了任何人的奶橘猫",
+                subtitle: "有求必应的宇宙中心",
+                monologue: "我帮，我帮，都帮，真的不麻烦。",
+                tags: ["间歇性想独处", "人类观察计划成员", "踩奶专业户", "罐头探测雷达"],
+                icon: "🐱",
+                iconBg: "bg-orange-100",
+                description: "你就像一只趴在阳台上看风景的橘猫，阳光洒在你身上，你觉得这就是猫生的巅峰时刻。你对人类充满好奇，总是想知道他们在做什么，但又不想太主动。你喜欢在远处观察，偶尔伸个爪子拨弄一下桌上的小物件，确认它们还在你的掌控之中。你很温柔，但也有自己的小脾气。当有人试图挑战你的领地时，你会用眼神和尾巴尖轻轻敲打来表达不满。你最喜欢的活动是找一个温暖的角落，然后花上几个小时思考人生（其实就是发呆）。你懂得享受生活，知道什么时候该玩耍，什么时候该休息。"
+            },
+            {
+                type: "暹罗猫",
+                title: "话唠星人的暹罗猫",
+                subtitle: "喵喵叫个不停的好奇宝宝",
+                monologue: "你在说什么？我不听我不听！",
+                tags: ["社交恐怖分子", "话痨本喵", "粘人精转世", "精力过剩"],
+                icon: "🐱",
+                iconBg: "bg-blue-100",
+                description: "你是一只活力四射的暹罗猫，仿佛身上装了一个永不枯竭的电池。你对世界充满好奇，每一样新事物都想用嘴巴探索，用爪子验证。你喜欢和人类聊天，虽然他们听不懂你在说什么，但你知道他们一定很享受你的表演。你很粘人，喜欢跟在主人身后走来走去，是出了名的\"猫中之狗\"。你精力充沛，喜欢在家里跑来跑去，仿佛在进行日常的马拉松训练。你的声音独特而响亮，总能引起注意。你喜欢参与家里的一切事务，不管是做饭、看电视还是打扫卫生，你都要发表意见。你的智慧让你轻松学会各种小把戏，是家里的开心果。"
+            },
+            {
+                type: "英短蓝猫",
+                title: "好奇害死猫的英短蓝猫",
+                subtitle: "稳重外表下的好奇宝宝",
+                monologue: "让我看看，让我看看嘛！",
+                tags: ["好奇害死猫", "圆润哲学家", "静止如山", "突然爆发"],
+                icon: "🐱",
+                iconBg: "bg-blue-200",
+                description: "你是一只圆润的英短蓝猫，看起来憨厚老实，其实内心住着一个好奇宝宝。你喜欢观察一切新鲜事物，静静地坐在那里，但眼睛却一刻不停地追踪着家里的一切动静。你很有耐心，可以连续几个小时盯着窗外的落叶看。但当猎物出现时，你会瞬间从\"哲学猫\"变成\"猎豹猫\"，展现出惊人的爆发力。你对食物很执着，尤其是小零食，会用各种方式讨好主人。你懂得如何用无辜的眼神换取想要的东西，这是你的生存技能。"
+            },
+            {
+                type: "黑猫",
+                title: "暗黑系精灵的黑猫",
+                subtitle: "神秘优雅的夜晚使者",
+                monologue: "黑夜给了我黑色的眼睛，我却用它寻找小鱼干。",
+                tags: ["夜行侠客", "神秘代言人", "独处爱好者", "第六感超强"],
+                icon: "🐱",
+                iconBg: "bg-gray-800",
+                description: "你是一只神秘的黑猫，在黑暗中来去无声，如同暗夜的精灵。你的眼眸在夜晚会发出幽幽的光，让人不寒而栗。你不喜欢吵闹的环境，更偏爱安静的夜晚。你有很强的直觉，能感知到人类感知不到的东西。你看起来高冷，但其实是慢热型，需要长时间相处才能建立信任。你喜欢在高处观察一切，把所有事情都尽收眼底，然后做出最正确的判断。你不喜欢表达情感，但你会用独特的方式关心主人，比如在深夜静静守在床边。你是低调而神秘的存在，不喜欢张扬，但你的存在感却无法忽视。"
+            },
+            {
+                type: "三花猫",
+                title: "古灵精怪的三花猫",
+                subtitle: "心情如天气般变幻莫测",
+                monologue: "今天心情好，让你摸一下。",
+                tags: ["傲娇本娇", "心情天气预报", "戏精附体", "高冷伪装者"],
+                icon: "🐱",
+                iconBg: "bg-pink-100",
+                description: "你是一只神秘的三花猫，性格多变，如同春天的天气忽晴忽雨。你有自己独特的审美标准，对美有着执着的追求。你的心情决定了今天要不要给人类好脸色，但你内心其实很渴望被爱。只是你不会轻易表现出来，因为那样太掉价了。你喜欢独处，在自己的小世界里做自己喜欢的事。你是高冷的，但你偶尔露出的温柔会让人类受宠若惊。你很聪明，知道如何利用自己的优势获得想要的东西。你是家里的戏精，各种表情包信手拈来，给家人带来无尽的欢乐。"
+            },
+            {
+                type: "布偶猫",
+                title: "优雅粘人的布偶猫",
+                subtitle: "温柔到骨子里的贵族殿下",
+                monologue: "抱紧我，我们永远不分开。",
+                tags: ["粘人精本精", "优雅永不过时", "温柔小天使", "信号接收塔"],
+                icon: "🐱",
+                iconBg: "bg-purple-100",
+                description: "你是一只举止优雅的布偶猫，走路带风，眼神温柔，仿佛看透了世间一切。你对人类充满信任，喜欢被人抱在怀里，是典型的\"抱抱猫\"。你很粘人，但不会太过分，你懂得在适当的时候给予空间，又在适当的时候索取拥抱。你的毛发如丝般顺滑，每次舔毛都是一场精致的自我护理仪式。你喜欢安静的环境，不喜欢吵闹。你很聪明，能理解人类的情绪，在你需要安慰的时候默默陪在你身边。你的声音轻柔，叫起来像在撒娇。你是完美的室友，温柔的伴侣，治愈系的小天使。"
+            },
+            {
+                type: "无毛猫",
+                title: "外表犀利的无毛猫",
+                subtitle: "内心柔软的温柔巨人",
+                monologue: "别看我外表冷酷，我其实超会撒娇的。",
+                tags: ["温度感知大师", "皮肤饥渴症", "智慧型选手", "情感咨询师"],
+                icon: "🐱",
+                iconBg: "bg-yellow-100",
+                description: "你是一只特别的无毛猫，外表独特，内心却极其温柔。你对温度变化非常敏感，总是寻找最舒适的位置。你需要人类的爱抚来保持身心温暖，因为你那光滑的皮肤渴望被触碰。你很聪明，能理解人类的情绪，在你需要安慰的时候默默陪在你身边。你不喜欢激烈的运动，更喜欢安静的陪伴。你的外表可能让人误解你很冷酷，但了解你的人都知道，你其实是一只超级粘人又温柔的小猫咪。你是唯一会主动哄人睡觉的猫咪，你的呼噜声是最好的催眠曲。"
+            },
+            {
+                type: "奶牛猫",
+                title: "精力过剩的奶牛猫",
+                subtitle: "猫中哈士奇，拆迁队长",
+                monologue: "这家里没我早晚得散。",
+                tags: ["拆家能手", "深夜蹦迪", "社交恐怖分子", "拒绝冷战"],
+                icon: "🐱",
+                iconBg: "bg-gray-300",
+                description: "你是一只精力充沛到可怕的奶牛猫，身上仿佛安装了一个永动机。你喜欢在家里横冲直撞，把所有能碰到的东西都当成玩具。你是著名的\"猫中哈士奇\"，有着独特的审美和超强的破坏力。你喜欢在深夜活动，在主人睡觉的时候进行你的\"夜间训练\"。你很聪明，但总是把智慧用在错误的地方，比如如何打开不该打开的柜子。你不怕水，甚至喜欢玩水，这让其他猫都对你刮目相看。你是家里的开心果，虽然有时候会让主人崩溃，但你的可爱足以弥补一切。你拒绝冷战，有话直说，是猫咪界的\"社牛\"。"
+            },
+            {
+                type: "银渐层",
+                title: "看破红尘的银渐层",
+                subtitle: "佛系躺平的最佳代表",
+                monologue: "都行都可以没关系。",
+                tags: ["佛系躺平", "能不动就不动", "情绪稳定大师", "云淡风轻"],
+                icon: "🐱",
+                iconBg: "bg-gray-100",
+                description: "你是一只优雅从容的银渐层，仿佛已经看透了猫生的真谛。你对一切都保持着\"佛系\"的态度，不争不抢，顺其自然。你最喜欢的事情就是在阳光下一躺，享受岁月静好。你很少会因为事情发脾气，因为你觉得一切都\"无所谓\"。你很安静，不喜欢吵闹的环境，也不喜欢过多的社交。你对食物没有特别的要求，给什么吃什么。你就像一个得道高僧，无论发生什么都能保持内心的平静。你是主人的情绪稳定器，当你出现在房间里，焦虑都会不自觉地消散。"
+            },
+            {
+                type: "美短虎斑",
+                title: "元气满满的美短虎斑",
+                subtitle: "永远十八岁的活力少年",
+                monologue: "冲鸭！世界等着我去探索！",
+                tags: ["永动机附体", "捕猎本能", "活力少年", "好奇心爆棚"],
+                icon: "🐱",
+                iconBg: "bg-amber-100",
+                description: "你是一只永远充满活力的美短虎斑，仿佛永远停留在青春十八岁。你对世界充满好奇，每一天都像是新的冒险。你喜欢捕猎游戏，任何移动的物体都会激起你的狩猎本能。你的身材矫健，肌肉发达，是猫界的运动健将。你喜欢和主人互动，玩各种追逐游戏。你很聪明，学习能力强，很快就能学会各种小技巧。你像一只永远长不大的孩子，对一切都充满热情。你的条纹花纹让你看起来像个小小的老虎，但内心却是个粘人的小可爱。"
+            },
+            {
+                type: "狸花猫",
+                title: "生存大师狸花猫",
+                subtitle: "中华田园的智慧精英",
+                monologue: "我自己能养活自己，谢谢。",
+                tags: ["独立自主", "生存专家", "捕猎高手", "低调实力派"],
+                icon: "🐱",
+                iconBg: "bg-amber-200",
+                description: "你是一只聪明绝顶的狸花猫，是中华田园猫中的精英代表。你独立自主，有很强的生存能力，即使在野外也能活得很好。你警惕性很高，对陌生人保持距离，但对自己信任的人会展现出温柔的一面。你的花纹漂亮而有野性，让你看起来像个小小的猎豹。你很聪明，智商在猫界中名列前茅，学习能力极强。你身体健康，很少生病，是猫咪中的\"铁胃\"。你对食物不挑剔，但有自己的原则。你不喜欢被束缚，向往自由，但又会在自己的领地里默默守护家人。"
+            },
+            {
+                type: "波斯猫",
+                title: "高傲贵族的波斯猫",
+                subtitle: "我就是艺术本身",
+                monologue: "跪下吧，人类，本宫驾到了。",
+                tags: ["颜值即正义", "高冷 mode", "懒贵妇", "颜性恋"],
+                icon: "🐱",
+                iconBg: "bg-red-100",
+                description: "你是一只高贵典雅的波斯猫，天生就带着贵族气质。你的一举一动都散发着优雅，走路时毛发飘扬，如同移动的艺术品。你很懒，不喜欢运动，更喜欢在一个舒适的地方静静躺着，让人类来伺候你。你的毛发需要经常打理，这让你更加确信自己是需要被精心照顾的贵族。你对食物很挑剔，只吃自己喜欢的东西。你不喜欢嘈杂的环境，更偏爱安静优雅的空间。你的高冷不是冷漠，而是你知道自己太出色了，需要保持神秘感。你是真正的\"白富美\"和\"高富帅\"，有着与生俱来的骄傲。"
+            }
+        ];
+        
+        let currentQuestion = 0;
+        let selectedOption = null;
+        let userScores = {};
+        
+        const homePage = document.getElementById('home-page');
+        const quizPage = document.getElementById('quiz-page');
+        const loadingPage = document.getElementById('loading-page');
+        const resultPage = document.getElementById('result-page');
+        const startTestButton = document.getElementById('start-test');
+        const backButton = document.getElementById('back-button');
+        const progressElement = document.getElementById('progress');
+        const catIconElement = document.getElementById('cat-icon');
+        const catThoughtElement = document.getElementById('cat-thought');
+        const questionElement = document.getElementById('question');
+        const optionsContainer = document.getElementById('options');
+        const nextButton = document.getElementById('next-button');
+        const saveResultButton = document.getElementById('save-result');
+        
+        function init() {
+            startTestButton.addEventListener('click', startTest);
+            backButton.addEventListener('click', goBack);
+            nextButton.addEventListener('click', nextQuestion);
+            saveResultButton.addEventListener('click', saveResult);
+            optionsContainer.addEventListener('click', handleOptionClick);
+        }
+        
+        function startTest() {
+            currentQuestion = 0;
+            selectedOption = null;
+            userScores = {};
+            
+            homePage.classList.add('hidden');
+            quizPage.classList.remove('hidden');
+            quizPage.classList.add('fade-in');
+            loadQuestion();
+        }
+        
+        function goBack() {
+            quizPage.classList.add('hidden');
+            resultPage.classList.add('hidden');
+            homePage.classList.remove('hidden');
+        }
+        
+        function loadQuestion() {
+            const question = quizData[currentQuestion];
+            progressElement.textContent = `${currentQuestion + 1}/${quizData.length}`;
+            catThoughtElement.textContent = question.thought;
+            questionElement.textContent = question.question;
+            
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option p-3 md:p-4 border border-gray-300 rounded-lg cursor-pointer';
+                optionElement.dataset.index = index;
+                optionElement.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="text-gray-400 mr-3 md:mr-4 text-sm md:text-base">${String.fromCharCode(65 + index)}</div>
+                        <div class="flex-1 text-sm md:text-base">${option.text}</div>
+                    </div>
+                `;
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            selectedOption = null;
+            nextButton.classList.add('bg-gray-400');
+            nextButton.classList.remove('bg-black');
+            nextButton.disabled = true;
+        }
+        
+        function handleOptionClick(e) {
+            const optionElement = e.target.closest('.option');
+            if (!optionElement) return;
+            
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            optionElement.classList.add('selected');
+            selectedOption = parseInt(optionElement.dataset.index);
+            
+            nextButton.classList.remove('bg-gray-400');
+            nextButton.classList.add('bg-black');
+            nextButton.disabled = false;
+        }
+        
+        function nextQuestion() {
+            if (selectedOption === null) return;
+            
+            const question = quizData[currentQuestion];
+            const selected = question.options[selectedOption];
+            
+            for (const [trait, score] of Object.entries(selected.scores)) {
+                if (!userScores[trait]) {
+                    userScores[trait] = 0;
+                }
+                userScores[trait] += score;
+            }
+            
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                optionsContainer.style.opacity = '0';
+                optionsContainer.style.transform = 'translateY(10px)';
+                
+                setTimeout(() => {
+                    loadQuestion();
+                    optionsContainer.style.opacity = '1';
+                    optionsContainer.style.transform = 'translateY(0)';
+                }, 200);
+            } else {
+                quizPage.classList.add('hidden');
+                loadingPage.classList.remove('hidden');
+                loadingPage.classList.add('fade-in');
+                setTimeout(() => {
+                    showResult();
+                }, 2000);
+            }
+        }
+        
+        function calculateResult() {
+            const { clingy, aloof, curious, cautious, brave, timid, sociable, playful, energetic, independent, relaxed, patient, impatient } = userScores;
+            
+            const scores = {
+                0: (clingy || 0) + (impatient || 0) * 0.8,
+                1: (sociable || 0) * 1.2 + (playful || 0),
+                2: (curious || 0) * 1.5 + (cautious || 0) * 0.5,
+                3: (timid || 0) * 1.2 + (cautious || 0),
+                4: (brave || 0) + (independent || 0),
+                5: (clingy || 0) + (patient || 0),
+                6: (independent || 0) * 1.2 + (patient || 0),
+                7: (energetic || 0) * 1.5 + (playful || 0),
+                8: (relaxed || 0) * 1.5 + (patient || 0),
+                9: (energetic || 0) * 1.2 + (curious || 0),
+                10: (independent || 0) * 1.3 + (brave || 0),
+                11: (relaxed || 0) + (clingy || 0) * 0.5
+            };
+            
+            let maxScore = -1;
+            let resultIndex = 0;
+            
+            for (const [index, score] of Object.entries(scores)) {
+                if (score > maxScore) {
+                    maxScore = score;
+                    resultIndex = parseInt(index);
+                }
+            }
+            
+            return catResults[resultIndex];
+        }
+        
+        function showResult() {
+            loadingPage.classList.add('hidden');
+            resultPage.classList.remove('hidden');
+            resultPage.classList.add('fade-in');
+            
+            const result = calculateResult();
+            
+            document.getElementById('result-date').textContent = new Date().toLocaleDateString('zh-CN');
+            document.getElementById('result-cat-icon').className = `w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center text-5xl md:text-6xl ${result.iconBg}`;
+            document.getElementById('result-title').textContent = result.title;
+            document.getElementById('result-subtitle').textContent = result.subtitle;
+            document.getElementById('result-monologue').textContent = result.monologue;
+            document.getElementById('result-description').textContent = result.description;
+            
+            const tagsContainer = document.getElementById('result-tags');
+            tagsContainer.innerHTML = '';
+            result.tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'result-tag px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm';
+                tagElement.textContent = tag;
+                tagsContainer.appendChild(tagElement);
+            });
+            
+            console.log('测试完成！用户分数：', userScores);
+            console.log('测试结果：', result);
+        }
+        
+        async function saveResult() {
+            const resultCard = document.getElementById('result-card');
+            
+            try {
+                saveResultButton.textContent = '正在生成图片...';
+                saveResultButton.disabled = true;
+                
+                const canvas = await html2canvas(resultCard, {
+                    backgroundColor: '#ffffff',
+                    scale: 2
+                });
+                
+                const link = document.createElement('a');
+                link.download = `CATTI结果_${new Date().toLocaleDateString('zh-CN').replace(/\//g, '-')}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                saveResultButton.textContent = '保存结果，分享给朋友';
+                saveResultButton.disabled = false;
+            } catch (error) {
+                console.error('保存失败：', error);
+                saveResultButton.textContent = '保存失败，请重试';
+                setTimeout(() => {
+                    saveResultButton.textContent = '保存结果，分享给朋友';
+                    saveResultButton.disabled = false;
+                }, 2000);
+            }
+        }
+        
+        init();
+    </script>
+</body>
+</html>
