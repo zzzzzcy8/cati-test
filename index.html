@@ -201,7 +201,9 @@
         <div class="w-full h-0.5 bg-gray-200 mb-6 md:mb-8"></div>
         
         <div class="flex items-center mb-6 md:mb-8">
-            <div id="cat-icon" class="w-12 h-12 md:w-16 md:h-16 bg-gray-200 rounded-full flex items-center justify-center mr-3 md:mr-4 text-2xl md:text-3xl" style="background-image: url(./cats/cat-sprite.png); background-position: 0 0; background-size: 1200px 100%; background-repeat: no-repeat;"></div>
+            <div id="cat-icon" class="w-12 h-12 md:w-16 md:h-16 bg-gray-200 rounded-full flex items-center justify-center mr-3 md:mr-4 text-2xl md:text-3xl overflow-hidden">
+                <img id="quiz-cat-img" src="./cats/cat1.jpg" class="cat-pixel-img" alt="猫咪">
+            </div>
             <div id="cat-thought" class="flex-1 bg-gray-200 rounded-full px-4 md:px-6 py-2 md:py-3 text-sm md:text-base">
                 社交还是不社交，这是个问题
             </div>
@@ -234,7 +236,9 @@
         
         <div id="result-card" class="result-card bg-white rounded-2xl md:rounded-3xl p-5 md:p-8 mb-6 md:mb-8 mx-2">
             <div class="flex justify-center mb-4 md:mb-6">
-                <div id="result-cat-icon" class="w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center text-5xl md:text-6xl" style="background-image: url(./cats/cat-sprite.png); background-position: 0 0; background-size: 1200px 100%; background-repeat: no-repeat;"></div>
+                <div id="result-cat-icon" class="w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center text-5xl md:text-6xl overflow-hidden">
+                    <img id="result-cat-img" src="./cats/cat1.jpg" class="cat-pixel-img" alt="猫咪">
+                </div>
             </div>
             
             <div class="text-center mb-2">
@@ -270,28 +274,32 @@
     </div>
     
     <script>
-        // 猫咪图片文件夹路径：./cats/
-        // 请将所有猫咪像素图放在 d:\CATI\cats\ 目录下
-        // 文件命名建议：
-        // - 首页滚动图：cat_01.png, cat_02.png, ... (对应不同品种)
-        // - 答题页图标：quiz_icon_01.png, quiz_icon_02.png, ...
-        // - 结果页大图：result_cream.png (奶橘), result_siamese.png (暹罗), ...
-        // - result_blue.png (英短), result_black.png (黑猫), result_calico.png (三花)
-        // - result_ragdoll.png (布偶), result_sphynx.png (无毛), result_cow.png (奶牛)
-        // - result_silver.png (银渐层), result_tabby.png (美短), result_li.png (狸花), result_persian.png (波斯)
+        // 猫咪图片数组 - 请根据您的实际文件名填写
+        // 格式：'./cats/文件名.jpg'
+        // 建议：按猫咪品种顺序排列12张图片
+        const catImages = [
+            './cats/cat1.jpg',
+            './cats/cat2.jpg',
+            './cats/cat3.jpg',
+            './cats/cat4.jpg',
+            './cats/cat5.jpg',
+            './cats/cat6.jpg',
+            './cats/cat7.jpg',
+            './cats/cat8.jpg',
+            './cats/cat9.jpg',
+            './cats/cat10.jpg',
+            './cats/cat11.jpg',
+            './cats/cat12.jpg',
+            './cats/cat13.jpg'
+        ];
         
         const catRows = document.querySelectorAll('.cat-row');
         catRows.forEach((row, rowIndex) => {
             for (let i = 0; i < 10; i++) {
                 const catElement = document.createElement('div');
-                catElement.className = 'cat-image bg-gray-200 rounded';
-                // 使用精灵图显示不同的猫咪
-                const catIndex = (rowIndex * 10 + i) % 12; // 假设有12种猫咪
-                const xPos = -(catIndex * 100); // 假设每个猫咪宽度100px
-                catElement.style.backgroundImage = 'url(./cats/cat-sprite.png)';
-                catElement.style.backgroundPosition = `${xPos}px 0`;
-                catElement.style.backgroundSize = '1200px 100%'; // 12个猫咪，每个100px
-                catElement.style.backgroundRepeat = 'no-repeat';
+                catElement.className = 'cat-image bg-gray-200 rounded overflow-hidden';
+                const catIndex = (rowIndex * 10 + i) % catImages.length;
+                catElement.innerHTML = `<img src="${catImages[catIndex]}" class="cat-pixel-img" alt="猫咪">`;
                 row.appendChild(catElement);
             }
         });
@@ -401,89 +409,9 @@
         
         const catResults = [
             {
-                type: "奶橘猫",
-                title: "拒绝不了任何人的奶橘猫",
-                subtitle: "有求必应的宇宙中心",
-                monologue: "我帮，我帮，都帮，真的不麻烦。",
-                tags: ["间歇性想独处", "人类观察计划成员", "踩奶专业户", "罐头探测雷达"],
-                icon: "🐱",
-                iconBg: "bg-orange-100",
-                description: "你就像一只趴在阳台上看风景的橘猫，阳光洒在你身上，你觉得这就是猫生的巅峰时刻。你对人类充满好奇，总是想知道他们在做什么，但又不想太主动。你喜欢在远处观察，偶尔伸个爪子拨弄一下桌上的小物件，确认它们还在你的掌控之中。你很温柔，但也有自己的小脾气。当有人试图挑战你的领地时，你会用眼神和尾巴尖轻轻敲打来表达不满。你最喜欢的活动是找一个温暖的角落，然后花上几个小时思考人生（其实就是发呆）。你懂得享受生活，知道什么时候该玩耍，什么时候该休息。"
-            },
-            {
-                type: "暹罗猫",
-                title: "话唠星人的暹罗猫",
-                subtitle: "喵喵叫个不停的好奇宝宝",
-                monologue: "你在说什么？我不听我不听！",
-                tags: ["社交恐怖分子", "话痨本喵", "粘人精转世", "精力过剩"],
-                icon: "🐱",
-                iconBg: "bg-blue-100",
-                description: "你是一只活力四射的暹罗猫，仿佛身上装了一个永不枯竭的电池。你对世界充满好奇，每一样新事物都想用嘴巴探索，用爪子验证。你喜欢和人类聊天，虽然他们听不懂你在说什么，但你知道他们一定很享受你的表演。你很粘人，喜欢跟在主人身后走来走去，是出了名的\"猫中之狗\"。你精力充沛，喜欢在家里跑来跑去，仿佛在进行日常的马拉松训练。你的声音独特而响亮，总能引起注意。你喜欢参与家里的一切事务，不管是做饭、看电视还是打扫卫生，你都要发表意见。你的智慧让你轻松学会各种小把戏，是家里的开心果。"
-            },
-            {
-                type: "英短蓝猫",
-                title: "好奇害死猫的英短蓝猫",
-                subtitle: "稳重外表下的好奇宝宝",
-                monologue: "让我看看，让我看看嘛！",
-                tags: ["好奇害死猫", "圆润哲学家", "静止如山", "突然爆发"],
-                icon: "🐱",
-                iconBg: "bg-blue-200",
-                description: "你是一只圆润的英短蓝猫，看起来憨厚老实，其实内心住着一个好奇宝宝。你喜欢观察一切新鲜事物，静静地坐在那里，但眼睛却一刻不停地追踪着家里的一切动静。你很有耐心，可以连续几个小时盯着窗外的落叶看。但当猎物出现时，你会瞬间从\"哲学猫\"变成\"猎豹猫\"，展现出惊人的爆发力。你对食物很执着，尤其是小零食，会用各种方式讨好主人。你懂得如何用无辜的眼神换取想要的东西，这是你的生存技能。"
-            },
-            {
-                type: "黑猫",
-                title: "暗黑系精灵的黑猫",
-                subtitle: "神秘优雅的夜晚使者",
-                monologue: "黑夜给了我黑色的眼睛，我却用它寻找小鱼干。",
-                tags: ["夜行侠客", "神秘代言人", "独处爱好者", "第六感超强"],
-                icon: "🐱",
-                iconBg: "bg-gray-800",
-                description: "你是一只神秘的黑猫，在黑暗中来去无声，如同暗夜的精灵。你的眼眸在夜晚会发出幽幽的光，让人不寒而栗。你不喜欢吵闹的环境，更偏爱安静的夜晚。你有很强的直觉，能感知到人类感知不到的东西。你看起来高冷，但其实是慢热型，需要长时间相处才能建立信任。你喜欢在高处观察一切，把所有事情都尽收眼底，然后做出最正确的判断。你不喜欢表达情感，但你会用独特的方式关心主人，比如在深夜静静守在床边。你是低调而神秘的存在，不喜欢张扬，但你的存在感却无法忽视。"
-            },
-            {
-                type: "三花猫",
-                title: "古灵精怪的三花猫",
-                subtitle: "心情如天气般变幻莫测",
-                monologue: "今天心情好，让你摸一下。",
-                tags: ["傲娇本娇", "心情天气预报", "戏精附体", "高冷伪装者"],
-                icon: "🐱",
-                iconBg: "bg-pink-100",
-                description: "你是一只神秘的三花猫，性格多变，如同春天的天气忽晴忽雨。你有自己独特的审美标准，对美有着执着的追求。你的心情决定了今天要不要给人类好脸色，但你内心其实很渴望被爱。只是你不会轻易表现出来，因为那样太掉价了。你喜欢独处，在自己的小世界里做自己喜欢的事。你是高冷的，但你偶尔露出的温柔会让人类受宠若惊。你很聪明，知道如何利用自己的优势获得想要的东西。你是家里的戏精，各种表情包信手拈来，给家人带来无尽的欢乐。"
-            },
-            {
-                type: "布偶猫",
-                title: "优雅粘人的布偶猫",
-                subtitle: "温柔到骨子里的贵族殿下",
-                monologue: "抱紧我，我们永远不分开。",
-                tags: ["粘人精本精", "优雅永不过时", "温柔小天使", "信号接收塔"],
-                icon: "🐱",
-                iconBg: "bg-purple-100",
-                description: "你是一只举止优雅的布偶猫，走路带风，眼神温柔，仿佛看透了世间一切。你对人类充满信任，喜欢被人抱在怀里，是典型的\"抱抱猫\"。你很粘人，但不会太过分，你懂得在适当的时候给予空间，又在适当的时候索取拥抱。你的毛发如丝般顺滑，每次舔毛都是一场精致的自我护理仪式。你喜欢安静的环境，不喜欢吵闹。你很聪明，能理解人类的情绪，在你需要安慰的时候默默陪在你身边。你的声音轻柔，叫起来像在撒娇。你是完美的室友，温柔的伴侣，治愈系的小天使。"
-            },
-            {
-                type: "无毛猫",
-                title: "外表犀利的无毛猫",
-                subtitle: "内心柔软的温柔巨人",
-                monologue: "别看我外表冷酷，我其实超会撒娇的。",
-                tags: ["温度感知大师", "皮肤饥渴症", "智慧型选手", "情感咨询师"],
-                icon: "🐱",
-                iconBg: "bg-yellow-100",
-                description: "你是一只特别的无毛猫，外表独特，内心却极其温柔。你对温度变化非常敏感，总是寻找最舒适的位置。你需要人类的爱抚来保持身心温暖，因为你那光滑的皮肤渴望被触碰。你很聪明，能理解人类的情绪，在你需要安慰的时候默默陪在你身边。你不喜欢激烈的运动，更喜欢安静的陪伴。你的外表可能让人误解你很冷酷，但了解你的人都知道，你其实是一只超级粘人又温柔的小猫咪。你是唯一会主动哄人睡觉的猫咪，你的呼噜声是最好的催眠曲。"
-            },
-            {
-                type: "奶牛猫",
-                title: "精力过剩的奶牛猫",
-                subtitle: "猫中哈士奇，拆迁队长",
-                monologue: "这家里没我早晚得散。",
-                tags: ["拆家能手", "深夜蹦迪", "社交恐怖分子", "拒绝冷战"],
-                icon: "🐱",
-                iconBg: "bg-gray-300",
-                description: "你是一只精力充沛到可怕的奶牛猫，身上仿佛安装了一个永动机。你喜欢在家里横冲直撞，把所有能碰到的东西都当成玩具。你是著名的\"猫中哈士奇\"，有着独特的审美和超强的破坏力。你喜欢在深夜活动，在主人睡觉的时候进行你的\"夜间训练\"。你很聪明，但总是把智慧用在错误的地方，比如如何打开不该打开的柜子。你不怕水，甚至喜欢玩水，这让其他猫都对你刮目相看。你是家里的开心果，虽然有时候会让主人崩溃，但你的可爱足以弥补一切。你拒绝冷战，有话直说，是猫咪界的\"社牛\"。"
-            },
-            {
                 type: "银渐层",
                 title: "看破红尘的银渐层",
-                subtitle: "佛系躺平的最佳代表",
+                subtitle: "佛系躺平的优雅代表",
                 monologue: "都行都可以没关系。",
                 tags: ["佛系躺平", "能不动就不动", "情绪稳定大师", "云淡风轻"],
                 icon: "🐱",
@@ -491,19 +419,19 @@
                 description: "你是一只优雅从容的银渐层，仿佛已经看透了猫生的真谛。你对一切都保持着\"佛系\"的态度，不争不抢，顺其自然。你最喜欢的事情就是在阳光下一躺，享受岁月静好。你很少会因为事情发脾气，因为你觉得一切都\"无所谓\"。你很安静，不喜欢吵闹的环境，也不喜欢过多的社交。你对食物没有特别的要求，给什么吃什么。你就像一个得道高僧，无论发生什么都能保持内心的平静。你是主人的情绪稳定器，当你出现在房间里，焦虑都会不自觉地消散。"
             },
             {
-                type: "美短虎斑",
-                title: "元气满满的美短虎斑",
-                subtitle: "永远十八岁的活力少年",
-                monologue: "冲鸭！世界等着我去探索！",
-                tags: ["永动机附体", "捕猎本能", "活力少年", "好奇心爆棚"],
+                type: "奶牛猫",
+                title: "精力过剩的奶牛猫",
+                subtitle: "猫界哈士奇，拆迁队长",
+                monologue: "这家里没我早晚得散。",
+                tags: ["拆家能手", "深夜蹦迪", "社交恐怖分子", "拒绝冷战"],
                 icon: "🐱",
-                iconBg: "bg-amber-100",
-                description: "你是一只永远充满活力的美短虎斑，仿佛永远停留在青春十八岁。你对世界充满好奇，每一天都像是新的冒险。你喜欢捕猎游戏，任何移动的物体都会激起你的狩猎本能。你的身材矫健，肌肉发达，是猫界的运动健将。你喜欢和主人互动，玩各种追逐游戏。你很聪明，学习能力强，很快就能学会各种小技巧。你像一只永远长不大的孩子，对一切都充满热情。你的条纹花纹让你看起来像个小小的老虎，但内心却是个粘人的小可爱。"
+                iconBg: "bg-gray-300",
+                description: "你是一只精力充沛到可怕的奶牛猫，身上仿佛安装了一个永动机。你喜欢在家里横冲直撞，把所有能碰到的东西都当成玩具。你是著名的\"猫中哈士奇\"，有着独特的审美和超强的破坏力。你喜欢在深夜活动，在主人睡觉的时候进行你的\"夜间训练\"。你很聪明，但总是把智慧用在错误的地方，比如如何打开不该打开的柜子。你不怕水，甚至喜欢玩水，这让其他猫都对你刮目相看。你是家里的开心果，虽然有时候会让主人崩溃，但你的可爱足以弥补一切。你拒绝冷战，有话直说，是猫咪界的\"社牛\"。"
             },
             {
                 type: "狸花猫",
                 title: "生存大师狸花猫",
-                subtitle: "中华田园的智慧精英",
+                subtitle: "机智独立的中华田园猫",
                 monologue: "我自己能养活自己，谢谢。",
                 tags: ["独立自主", "生存专家", "捕猎高手", "低调实力派"],
                 icon: "🐱",
@@ -511,14 +439,104 @@
                 description: "你是一只聪明绝顶的狸花猫，是中华田园猫中的精英代表。你独立自主，有很强的生存能力，即使在野外也能活得很好。你警惕性很高，对陌生人保持距离，但对自己信任的人会展现出温柔的一面。你的花纹漂亮而有野性，让你看起来像个小小的猎豹。你很聪明，智商在猫界中名列前茅，学习能力极强。你身体健康，很少生病，是猫咪中的\"铁胃\"。你对食物不挑剔，但有自己的原则。你不喜欢被束缚，向往自由，但又会在自己的领地里默默守护家人。"
             },
             {
-                type: "波斯猫",
-                title: "高傲贵族的波斯猫",
-                subtitle: "我就是艺术本身",
-                monologue: "跪下吧，人类，本宫驾到了。",
-                tags: ["颜值即正义", "高冷 mode", "懒贵妇", "颜性恋"],
+                type: "黑猫",
+                title: "暗黑系精灵的黑猫",
+                subtitle: "酷飒内向的暗夜精灵",
+                monologue: "黑夜给了我黑色的眼睛，我却用它寻找小鱼干。",
+                tags: ["夜行侠客", "神秘代言人", "独处爱好者", "第六感超强"],
                 icon: "🐱",
-                iconBg: "bg-red-100",
-                description: "你是一只高贵典雅的波斯猫，天生就带着贵族气质。你的一举一动都散发着优雅，走路时毛发飘扬，如同移动的艺术品。你很懒，不喜欢运动，更喜欢在一个舒适的地方静静躺着，让人类来伺候你。你的毛发需要经常打理，这让你更加确信自己是需要被精心照顾的贵族。你对食物很挑剔，只吃自己喜欢的东西。你不喜欢嘈杂的环境，更偏爱安静优雅的空间。你的高冷不是冷漠，而是你知道自己太出色了，需要保持神秘感。你是真正的\"白富美\"和\"高富帅\"，有着与生俱来的骄傲。"
+                iconBg: "bg-gray-800",
+                description: "你是一只神秘的黑猫，在黑暗中来去无声，如同暗夜的精灵。你的眼眸在夜晚会发出幽幽的光，让人不寒而栗。你不喜欢吵闹的环境，更偏爱安静的夜晚。你有很强的直觉，能感知到人类感知不到的东西。你看起来高冷，但其实是慢热型，需要长时间相处才能建立信任。你喜欢在高处观察一切，把所有事情都尽收眼底，然后做出最正确的判断。你不喜欢表达情感，但你会用独特的方式关心主人，比如在深夜静静守在床边。你是低调而神秘的存在，不喜欢张扬，但你的存在感却无法忽视。"
+            },
+            {
+                type: "暹罗猫",
+                title: "话唠星人的暹罗猫",
+                subtitle: "像狗狗一样忠诚的话痨",
+                monologue: "你在说什么？我不听我不听！",
+                tags: ["社交恐怖分子", "话痨本喵", "粘人精转世", "精力过剩"],
+                icon: "🐱",
+                iconBg: "bg-blue-100",
+                description: "你是一只活力四射的暹罗猫，仿佛身上装了一个永不枯竭的电池。你对世界充满好奇，每一样新事物都想用嘴巴探索，用爪子验证。你喜欢和人类聊天，虽然他们听不懂你在说什么，但你知道他们一定很享受你的表演。你很粘人，喜欢跟在主人身后走来走去，是出了名的\"猫中之狗\"。你精力充沛，喜欢在家里跑来跑去，仿佛在进行日常的马拉松训练。你的声音独特而响亮，总能引起注意。你喜欢参与家里的一切事务，不管是做饭、看电视还是打扫卫生，你都要发表意见。你的智慧让你轻松学会各种小把戏，是家里的开心果。"
+            },
+            {
+                type: "三花猫",
+                title: "古灵精怪的三花猫",
+                subtitle: "阴晴不定的小魔女",
+                monologue: "今天心情好，让你摸一下。",
+                tags: ["傲娇本娇", "心情天气预报", "戏精附体", "高冷伪装者"],
+                icon: "🐱",
+                iconBg: "bg-pink-100",
+                description: "你是一只神秘的三花猫，性格多变，如同春天的天气忽晴忽雨。你有自己独特的审美标准，对美有着执着的追求。你的心情决定了今天要不要给人类好脸色，但你内心其实很渴望被爱。只是你不会轻易表现出来，因为那样太掉价了。你喜欢独处，在自己的小世界里做自己喜欢的事。你是高冷的，但你偶尔露出的温柔会让人类受宠若惊。你很聪明，知道如何利用自己的优势获得想要的东西。你是家里的戏精，各种表情包信手拈来，给家人带来无尽的欢乐。"
+            },
+            {
+                type: "奶牛猫",
+                title: "精力旺盛的奶牛猫",
+                subtitle: "猫界哈士奇的备选选手",
+                monologue: "我就是家里的活力源泉！",
+                tags: ["拆家小能手", "深夜跑酷", "社交达人", "逻辑鬼才"],
+                icon: "🐱",
+                iconBg: "bg-gray-300",
+                description: "你是一只精力充沛的奶牛猫，是猫界哈士奇的最佳备选。你喜欢在家里四处探索，把每一个角落都当成你的游乐场。你很聪明，总是能找到各种好玩的东西，即使是最普通的物品也能玩上半天。你喜欢和主人互动，会主动叼着玩具来找你玩。你是家里的开心果，总能用各种可爱的动作逗得家人哈哈大笑。虽然你有时候会有点调皮，但你的可爱足以让所有的小麻烦都变得值得。"
+            },
+            {
+                type: "橘猫",
+                title: "贪吃大脸的橘猫",
+                subtitle: "十个橘猫九个胖",
+                monologue: "这个看起来好像很好吃的样子！",
+                tags: ["贪吃鬼", "大脸盘子", "温柔巨人", "阳光爱好者"],
+                icon: "🐱",
+                iconBg: "bg-orange-100",
+                description: "你是一只可爱的橘猫，有着标志性的大脸和圆滚滚的身材。你对食物有着无限的热情，总是能准确地感知到食物的存在。你很温柔，喜欢被人抚摸，尤其是在吃饱喝足之后。你喜欢在阳光下睡觉，仿佛整个世界都与你无关。你性格开朗，对人类充满信任，是理想的家庭宠物。虽然你有点贪吃，但你的可爱和温柔让所有人都对你爱不释手。"
+            },
+            {
+                type: "布偶猫",
+                title: "优雅粘人的布偶猫",
+                subtitle: "仙女猫下凡",
+                monologue: "抱紧我，我们永远不分开。",
+                tags: ["粘人精本精", "优雅永不过时", "温柔小天使", "信号接收塔"],
+                icon: "🐱",
+                iconBg: "bg-purple-100",
+                description: "你是一只举止优雅的布偶猫，走路带风，眼神温柔，仿佛看透了世间一切。你对人类充满信任，喜欢被人抱在怀里，是典型的\"抱抱猫\"。你很粘人，但不会太过分，你懂得在适当的时候给予空间，又在适当的时候索取拥抱。你的毛发如丝般顺滑，每次舔毛都是一场精致的自我护理仪式。你喜欢安静的环境，不喜欢吵闹。你很聪明，能理解人类的情绪，在你需要安慰的时候默默陪在你身边。你的声音轻柔，叫起来像在撒娇。你是完美的室友，温柔的伴侣，治愈系的小天使。"
+            },
+            {
+                type: "奶牛猫",
+                title: "精力过旺的奶牛猫",
+                subtitle: "逻辑鬼才的思想家",
+                monologue: "我发现了一个惊天大秘密！",
+                tags: ["精力无限", "逻辑鬼才", "好奇宝宝", "社交达人"],
+                icon: "🐱",
+                iconBg: "bg-gray-300",
+                description: "你是一只精力过旺的奶牛猫，同时也是个逻辑鬼才。你总是能发现别人注意不到的细节，对周围的一切都充满好奇。你喜欢思考，常常会坐在窗边陷入沉思，仿佛在思考猫生的终极问题。你很聪明，学习能力强，能很快学会各种小技巧。你喜欢和主人互动，会主动参与家里的各种活动。你是家里的智多星，总能给生活带来惊喜和乐趣。"
+            },
+            {
+                type: "三花猫",
+                title: "古灵精怪的三花猫",
+                subtitle: "心思细腻的小机灵",
+                monologue: "我知道你在想什么哦！",
+                tags: ["古灵精怪", "心思细腻", "直觉敏锐", "情感丰富"],
+                icon: "🐱",
+                iconBg: "bg-pink-100",
+                description: "你是一只古灵精怪的三花猫，心思细腻，直觉敏锐。你能感知到主人的情绪变化，总是能在适当的时候给予安慰。你很聪明，知道如何讨好人类，也知道如何为自己争取权益。你喜欢独处，但也享受和主人的互动时光。你是家里的小机灵，总能用各种可爱的方式表达自己的想法。你的情绪丰富，时而活泼时而安静，给生活增添了无限的乐趣。"
+            },
+            {
+                type: "英短蓝猫",
+                title: "好奇心重的英短蓝猫",
+                subtitle: "贪吃的圆润哲学家",
+                monologue: "让我看看，让我看看嘛！",
+                tags: ["好奇害死猫", "圆润哲学家", "贪吃鬼", "突然爆发"],
+                icon: "🐱",
+                iconBg: "bg-blue-200",
+                description: "你是一只圆润的英短蓝猫，看起来憨厚老实，其实内心住着一个好奇宝宝。你喜欢观察一切新鲜事物，静静地坐在那里，但眼睛却一刻不停地追踪着家里的一切动静。你很有耐心，可以连续几个小时盯着窗外的落叶看。但当猎物出现时，你会瞬间从\"哲学猫\"变成\"猎豹猫\"，展现出惊人的爆发力。你对食物很执着，尤其是小零食，会用各种方式讨好主人。你懂得如何用无辜的眼神换取想要的东西，这是你的生存技能。"
+            },
+            {
+                type: "俄罗斯蓝猫",
+                title: "高冷安静的俄罗斯蓝猫",
+                subtitle: "心思缜密的神秘贵族",
+                monologue: "我只是在思考人生。",
+                tags: ["高冷安静", "心思缜密", "观察力强", "独立优雅"],
+                icon: "🐱",
+                iconBg: "bg-blue-300",
+                description: "你是一只高贵的俄罗斯蓝猫，有着独特的银色蓝灰色毛发和明亮的绿色眼睛。你性格高冷，喜欢安静的环境，不喜欢过多的社交。你心思缜密，观察力强，总能注意到别人忽略的细节。你很独立，不需要过多的关注，但在你心情好的时候也会主动亲近主人。你喜欢有规律的生活，对环境的变化比较敏感。你是一只神秘而优雅的猫咪，给人一种高贵不可侵犯的感觉，但了解你的人都知道你有一颗温柔的心。"
             }
         ];
         
@@ -678,15 +696,11 @@
             
             const result = calculateResult();
             const resultIndex = catResults.findIndex(r => r.type === result.type);
-            const xPos = -(resultIndex * 100); // 根据结果索引计算精灵图位置
             
             document.getElementById('result-date').textContent = new Date().toLocaleDateString('zh-CN');
             const resultCatIcon = document.getElementById('result-cat-icon');
-            resultCatIcon.className = `w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center text-5xl md:text-6xl ${result.iconBg}`;
-            resultCatIcon.style.backgroundImage = 'url(./cats/cat-sprite.png)';
-            resultCatIcon.style.backgroundPosition = `${xPos}px 0`;
-            resultCatIcon.style.backgroundSize = '1200px 100%';
-            resultCatIcon.style.backgroundRepeat = 'no-repeat';
+            resultCatIcon.className = `w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center text-5xl md:text-6xl overflow-hidden ${result.iconBg}`;
+            document.getElementById('result-cat-img').src = catImages[resultIndex];
             
             document.getElementById('result-title').textContent = result.title;
             document.getElementById('result-subtitle').textContent = result.subtitle;
