@@ -228,6 +228,45 @@
     </div>
     
     <div id="result-page" class="page w-full max-w-2xl md:max-w-4xl hidden">
+        <!-- 隐藏的海报模板 -->
+        <div id="poster-template" class="fixed top-0 left-0 w-[375px] h-[560px] bg-white p-8 rounded-3xl shadow-2xl z-[-1] opacity-0 pointer-events-none">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-black">CATTI</h1>
+            </div>
+            
+            <div class="flex justify-center mb-6">
+                <div id="poster-cat-icon" class="w-32 h-32 rounded-full flex items-center justify-center overflow-hidden bg-gray-100">
+                    <img id="poster-cat-img" src="./cats/cat1.jpg" class="cat-pixel-img" alt="猫咪">
+                </div>
+            </div>
+            
+            <div class="text-center mb-4">
+                <h2 id="poster-title" class="text-2xl font-bold">拒绝不了任何人的奶橘猫</h2>
+                <p id="poster-subtitle" class="text-gray-500 mt-2">有求必应的宇宙中心</p>
+            </div>
+            
+            <div class="bg-gray-100 rounded-xl p-4 mb-6">
+                <div class="flex items-start">
+                    <span class="text-2xl mr-2">"</span>
+                    <p id="poster-monologue" class="text-gray-600 flex-1">我帮，我帮，都帮，真的不麻烦。</p>
+                </div>
+            </div>
+            
+            <div id="poster-tags" class="flex flex-wrap justify-center gap-2 mb-6">
+                <span class="px-3 py-1 rounded-full text-xs bg-gray-100">间歇性想独处</span>
+                <span class="px-3 py-1 rounded-full text-xs bg-gray-100">人类观察计划成员</span>
+                <span class="px-3 py-1 rounded-full text-xs bg-gray-100">踩奶专业户</span>
+                <span class="px-3 py-1 rounded-full text-xs bg-gray-100">罐头探测雷达</span>
+            </div>
+            
+            <div id="poster-description" class="text-gray-700 leading-relaxed text-sm mb-8" style="font-family: system-ui, -apple-system, sans-serif;">
+                你就像一只趴在阳台上看风景的橘猫，阳光洒在你身上，你觉得这就是猫生的巅峰时刻。
+            </div>
+            
+            <div class="text-center text-xs text-gray-400">
+                长按保存你的猫生档案
+            </div>
+        </div>
         <div class="w-full flex items-center justify-between mb-4 px-2">
             <div class="text-xs md:text-sm">CATTI结果</div>
             <div id="result-date" class="text-xs md:text-sm text-gray-500"></div>
@@ -568,6 +607,7 @@
             backButton.addEventListener('click', goBack);
             nextButton.addEventListener('click', nextQuestion);
             saveResultButton.addEventListener('click', saveResult);
+            rebornButton.addEventListener('click', reborn);
             optionsContainer.addEventListener('click', handleOptionClick);
         }
         
