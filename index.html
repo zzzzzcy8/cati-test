@@ -24,7 +24,7 @@
         .cat-scroll-container {
             overflow: hidden;
             position: relative;
-            height: 200px;
+            height: 280px;
             margin: 20px 0;
         }
         
@@ -129,7 +129,7 @@
             }
             
             .cat-scroll-container {
-                height: 150px;
+                height: 210px;
                 margin: 10px 0;
             }
             
@@ -201,9 +201,7 @@
         <div class="w-full h-0.5 bg-gray-200 mb-6 md:mb-8"></div>
         
         <div class="flex items-center mb-6 md:mb-8">
-            <div id="cat-icon" class="w-12 h-12 md:w-16 md:h-16 bg-gray-200 rounded-full flex items-center justify-center mr-3 md:mr-4 text-2xl md:text-3xl">
-                <img src="./cats/cat-sprite.png" class="cat-pixel-img" alt="猫咪">
-            </div>
+            <div id="cat-icon" class="w-12 h-12 md:w-16 md:h-16 bg-gray-200 rounded-full flex items-center justify-center mr-3 md:mr-4 text-2xl md:text-3xl" style="background-image: url(./cats/cat-sprite.png); background-position: 0 0; background-size: 1200px 100%; background-repeat: no-repeat;"></div>
             <div id="cat-thought" class="flex-1 bg-gray-200 rounded-full px-4 md:px-6 py-2 md:py-3 text-sm md:text-base">
                 社交还是不社交，这是个问题
             </div>
@@ -236,9 +234,7 @@
         
         <div id="result-card" class="result-card bg-white rounded-2xl md:rounded-3xl p-5 md:p-8 mb-6 md:mb-8 mx-2">
             <div class="flex justify-center mb-4 md:mb-6">
-                <div id="result-cat-icon" class="w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center text-5xl md:text-6xl">
-                    <img src="./cats/cat-sprite.png" class="cat-pixel-img" alt="猫咪">
-                </div>
+                <div id="result-cat-icon" class="w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center text-5xl md:text-6xl" style="background-image: url(./cats/cat-sprite.png); background-position: 0 0; background-size: 1200px 100%; background-repeat: no-repeat;"></div>
             </div>
             
             <div class="text-center mb-2">
@@ -285,12 +281,17 @@
         // - result_silver.png (银渐层), result_tabby.png (美短), result_li.png (狸花), result_persian.png (波斯)
         
         const catRows = document.querySelectorAll('.cat-row');
-        catRows.forEach(row => {
+        catRows.forEach((row, rowIndex) => {
             for (let i = 0; i < 10; i++) {
                 const catElement = document.createElement('div');
                 catElement.className = 'cat-image bg-gray-200 rounded';
-                // 如果有像素图，取消下面注释并修改路径：
-                // catElement.innerHTML = `<img src="./cats/cat_${String(i + 1).padStart(2, '0')}.png" class="cat-pixel-img" alt="猫咪">`;
+                // 使用精灵图显示不同的猫咪
+                const catIndex = (rowIndex * 10 + i) % 12; // 假设有12种猫咪
+                const xPos = -(catIndex * 100); // 假设每个猫咪宽度100px
+                catElement.style.backgroundImage = 'url(./cats/cat-sprite.png)';
+                catElement.style.backgroundPosition = `${xPos}px 0`;
+                catElement.style.backgroundSize = '1200px 100%'; // 12个猫咪，每个100px
+                catElement.style.backgroundRepeat = 'no-repeat';
                 row.appendChild(catElement);
             }
         });
@@ -676,9 +677,17 @@
             resultPage.classList.add('fade-in');
             
             const result = calculateResult();
+            const resultIndex = catResults.findIndex(r => r.type === result.type);
+            const xPos = -(resultIndex * 100); // 根据结果索引计算精灵图位置
             
             document.getElementById('result-date').textContent = new Date().toLocaleDateString('zh-CN');
-            document.getElementById('result-cat-icon').className = `w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center text-5xl md:text-6xl ${result.iconBg}`;
+            const resultCatIcon = document.getElementById('result-cat-icon');
+            resultCatIcon.className = `w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center text-5xl md:text-6xl ${result.iconBg}`;
+            resultCatIcon.style.backgroundImage = 'url(./cats/cat-sprite.png)';
+            resultCatIcon.style.backgroundPosition = `${xPos}px 0`;
+            resultCatIcon.style.backgroundSize = '1200px 100%';
+            resultCatIcon.style.backgroundRepeat = 'no-repeat';
+            
             document.getElementById('result-title').textContent = result.title;
             document.getElementById('result-subtitle').textContent = result.subtitle;
             document.getElementById('result-monologue').textContent = result.monologue;
