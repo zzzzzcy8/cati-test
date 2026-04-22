@@ -181,10 +181,12 @@
             <div class="cat-row" style="top: 145px; animation: scroll-left 22s linear infinite;"></div>
         </div>
         
-        <div class="text-center mt-6 md:mt-8 px-4">
-            <h2 class="text-xl md:text-2xl lg:text-3xl font-bold text-black mb-2">重生之我变成了一只猫</h2>
-            <p class="text-base md:text-lg lg:text-xl text-gray-600 mb-6 md:mb-8">"这一次，我要活出自己的猫生"</p>
-            <button id="start-test" class="bg-black text-white text-base md:text-xl py-3 md:py-4 px-8 md:px-12 rounded-full hover:bg-gray-800 transition-colors duration-300 active:scale-95">
+        <div class="text-center mt-10 md:mt-16 px-4">
+            <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-6 md:mb-8">遇见另一个时空的你</h2>
+            <h3 class="text-xl md:text-2xl lg:text-3xl font-bold text-black mb-4 md:mb-6">重生之我变成了一只猫</h3>
+            <p class="text-base md:text-lg lg:text-xl text-gray-600 mb-8 md:mb-12">"这一次，我要活出自己的猫生"</p>
+            <p class="text-sm md:text-base text-gray-400 mb-10 md:mb-16 max-w-md mx-auto leading-relaxed">通过 10 道性格测试题，精准匹配你的像素猫原型，领取你的猫生档案。</p>
+            <button id="start-test" class="bg-black text-white text-base md:text-xl py-4 md:py-5 px-10 md:px-16 rounded-full hover:bg-gray-800 transition-colors duration-300 active:scale-95">
                 开始测试
             </button>
         </div>
@@ -779,15 +781,16 @@
         }
         
         async function saveResult() {
-            const resultCard = document.getElementById('result-card');
+            const posterTemplate = document.getElementById('poster-template');
             
             try {
                 saveResultButton.textContent = '正在生成图片...';
                 saveResultButton.disabled = true;
                 
-                const canvas = await html2canvas(resultCard, {
-                    backgroundColor: '#ffffff',
-                    scale: 2
+                const canvas = await html2canvas(posterTemplate, {
+                    backgroundColor: '#f8f5e6',
+                    scale: 2,
+                    useCORS: true
                 });
                 
                 const link = document.createElement('a');
